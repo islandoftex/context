@@ -1,0 +1,22 @@
+# ConTeXt LMTX is currently not available for Linux/MUSL. Hence, we choose
+# Debian instead of Alpine.
+FROM debian:testing
+
+# install all relevant packages
+RUN apt-get update && \ 
+    # for downloading ConTeXt
+    apt-get install -y ca-certificates wget rsync unzip \ 
+    # for syntax highlighting
+    vim \ 
+    && rm -rf /var/lib/apt/lists/*
+
+# install ConTeXt LMTX
+RUN mkdir context && cd context && wget http://lmtx.pragma-ade.nl/install-lmtx/context-linux-64.zip && \
+    unzip context-linux-64.zip && rm context-linux-64.zip && \ 
+    sh ./install.sh --modules=all --context=beta --engine=luatex
+
+# adjust PATH
+ENV PATH "/context/tex/texmf-linux-64/bin:/context/bin:/context/tex/texmf-linux-64/bin:$PATH"
+
+# check if installation succeeded
+RUN mtxrun --autogenerate --script context --version
