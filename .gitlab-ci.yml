@@ -1,18 +1,27 @@
-image: docker:latest
 variables:
   DOCKER_DRIVER: overlay2
   RELEASE_IMAGE: registry.gitlab.com/islandoftex/images/context
-services:
-  - docker:dind
 stages:
   - build
+  - test
 
-before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
-  - docker info
+.buildtemplate: &builddefinition
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - docker info
+
+.testtemplate: &testdefinition
+  stage: test
+  script:
+    - context --version
+    - context test.mkiv
 
 build:beta:
-  stage: build
+  <<: *builddefinition
   script:
     - IMAGETAG="context-beta-`date +%Y-%m-%d-%H-%M`-$CI_COMMIT_SHORT_SHA"
     - docker build -f Dockerfile.mkivbeta --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:beta .
@@ -20,7 +29,7 @@ build:beta:
     - docker push $RELEASE_IMAGE:beta
 
 build:current:
-  stage: build
+  <<: *builddefinition
   script:
     - IMAGETAG="context-current-`date +%Y-%m-%d-%H-%M`-$CI_COMMIT_SHORT_SHA"
     - docker build -f Dockerfile.mkivcurrent --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:current .
@@ -28,9 +37,24 @@ build:current:
     - docker push $RELEASE_IMAGE:current
 
 build:lmtx:
-  stage: build
+  <<: *builddefinition
   script:
     - IMAGETAG="context-lmtx-`date +%Y-%m-%d-%H-%M`-$CI_COMMIT_SHORT_SHA"
     - docker build -f Dockerfile.lmtx --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:lmtx .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:lmtx
+
+test:beta:
+  <<: *testdefinition
+  needs: ["build:beta"]
+  image: registry.gitlab.com/islandoftex/images/context:beta
+
+test:current:
+  <<: *testdefinition
+  needs: ["build:current"]
+  image: registry.gitlab.com/islandoftex/images/context:current
+
+test:lmtx:
+  <<: *testdefinition
+  needs: ["build:lmtx"]
+  image: registry.gitlab.com/islandoftex/images/context:lmtx
