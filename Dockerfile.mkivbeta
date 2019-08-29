@@ -1,19 +1,20 @@
-# ConTeXt MkIV runs on Alpine which reduces our image size
-FROM alpine:latest
+# ConTeXt MkIV does not run on Alpine, so we use Debian
+FROM debian:testing
 
 # install all relevant packages
-RUN apk update && \ 
+RUN apt-get update && \ 
     # for downloading ConTeXt
-    apk add ca-certificates wget rsync unzip git \ 
-    # for building luajittex
-    libgcc \ 
+    apt-get install -y ca-certificates wget rsync unzip \ 
     # for syntax highlighting
     vim \ 
-    && update-ca-certificates
+    && rm -rf /var/lib/apt/lists/*
 
 # install the latest ConTeXt MkIV beta
 RUN mkdir context && cd context && wget http://minimals.contextgarden.net/setup/first-setup.sh && \
         sh ./first-setup.sh --modules=all --context=beta --engine=luatex
 
 # adjust PATH
-ENV PATH "/context/tex/texmf-linuxmusl-64/bin:$PATH"
+ENV PATH "/context/tex/texmf-linux-64/bin:$PATH"
+
+# check if installation succeeded
+RUN mtxrun --autogenerate --script context --version
