@@ -5,7 +5,7 @@ FROM debian:testing
 # install all relevant packages
 RUN apt-get update && \ 
     # for downloading ConTeXt
-    apt-get install -y ca-certificates wget rsync unzip \ 
+    apt-get install -y libc6 ca-certificates wget unzip \ 
     # for syntax highlighting
     vim \ 
     && rm -rf /var/lib/apt/lists/*
@@ -13,7 +13,7 @@ RUN apt-get update && \
 # install ConTeXt LMTX
 RUN mkdir context && cd context && wget http://lmtx.pragma-ade.nl/install-lmtx/context-linux-64.zip && \
     unzip context-linux-64.zip && rm context-linux-64.zip && \ 
-    sh ./install.sh --modules=all --context=beta --engine=luatex
+    sh ./install.sh
 
 # adjust PATH
 ENV PATH "/context/tex/texmf-linux-64/bin:/context/bin:/context/tex/texmf-linux-64/bin:$PATH"
