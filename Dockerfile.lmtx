@@ -3,11 +3,13 @@
 FROM debian:testing
 
 # install all relevant packages
-RUN apt-get update && \ 
+RUN apt-get update && \
     # for downloading ConTeXt
-    apt-get install -y libc6 ca-certificates wget unzip \ 
+    apt-get install -y --no-install-recommends libc6 ca-certificates wget unzip \
+    # for downloading modules
+    rsync gawk \
     # for syntax highlighting
-    vim \ 
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
 # install ConTeXt LMTX
@@ -16,7 +18,17 @@ RUN mkdir context && cd context && wget http://lmtx.pragma-ade.nl/install-lmtx/c
     sh ./install.sh
 
 # adjust PATH
-ENV PATH "/context/tex/texmf-linux-64/bin:/context/bin:/context/tex/texmf-linux-64/bin:$PATH"
+ENV PATH "/context/tex/texmf-linux-64/bin:/context/bin:$PATH"
+
+# install available modules from garden (strategy by Henri Menke, see
+# https://mailman.ntg.nl/pipermail/ntg-context/2020/097023.html)
+RUN TEXMFMODULES="$(/context/tex/texmf-linux-64/bin/mtxrun --resolve-path "\$TEXMFMODULES")" && \
+    GARDENRSYNC="contextgarden.net::minimals/current/modules" && \
+    echo "$TEXMFMODULES" && mkdir -p "${TEXMFMODULES}/" && \
+    for module in $(rsync "${GARDENRSYNC}/*" | gawk '{print $NF}'); do \
+        echo "Syncing ${module}" && \
+        rsync -rpztlv --delete "${GARDENRSYNC}/${module}/" "${TEXMFMODULES}/"; \
+    done
 
 # check if installation succeeded
 RUN mtxrun --autogenerate --script context --version
