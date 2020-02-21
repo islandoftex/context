@@ -4,7 +4,7 @@ FROM debian:testing
 # install all relevant packages
 RUN apt-get update && \ 
     # for downloading ConTeXt
-    apt-get install -y ca-certificates wget rsync unzip \ 
+    apt-get install -y --no-install-recommends ca-certificates wget rsync unzip \ 
     # for syntax highlighting
     vim \ 
     && rm -rf /var/lib/apt/lists/*
