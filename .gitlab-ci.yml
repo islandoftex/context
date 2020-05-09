@@ -27,9 +27,10 @@ build:beta:
     - docker build -f Dockerfile.mkivbeta --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:beta .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:beta
-  only:
-    variables:
-      - $CTXBETA == "true"
+  rules:
+    - if: '$CTXBETA == "true"'
+      when: always
+    - when: never
 
 build:current:
   <<: *builddefinition
@@ -38,9 +39,10 @@ build:current:
     - docker build -f Dockerfile.mkivcurrent --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:current .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:current
-  only:
-    variables:
-      - $CTXCURRENT == "true"
+  rules:
+    - if: '$CTXCURRENT == "true"'
+      when: always
+    - when: never
 
 build:lmtx:
   <<: *builddefinition
@@ -49,30 +51,34 @@ build:lmtx:
     - docker build -f Dockerfile.lmtx --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:lmtx .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:lmtx
-  only:
-    variables:
-      - $CTXLMTX == "true"
+  rules:
+    - if: '$CTXLMTX == "true"'
+      when: always
+    - when: never
 
 test:beta:
   <<: *testdefinition
   needs: ["build:beta"]
   image: registry.gitlab.com/islandoftex/images/context:beta
-  only:
-    variables:
-      - $CTXBETA == "true"
+  rules:
+    - if: '$CTXBETA == "true"'
+      when: always
+    - when: never
 
 test:current:
   <<: *testdefinition
   needs: ["build:current"]
   image: registry.gitlab.com/islandoftex/images/context:current
-  only:
-    variables:
-      - $CTXCURRENT == "true"
+  rules:
+    - if: '$CTXCURRENT == "true"'
+      when: always
+    - when: never
 
 test:lmtx:
   <<: *testdefinition
   needs: ["build:lmtx"]
   image: registry.gitlab.com/islandoftex/images/context:lmtx
-  only:
-    variables:
-      - $CTXLMTX == "true"
+  rules:
+    - if: '$CTXLMTX == "true"'
+      when: always
+    - when: never
