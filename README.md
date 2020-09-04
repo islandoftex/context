@@ -16,3 +16,9 @@ or any other tag.
 
 The three main tags are `current` (updated monthly), `beta` and `lmtx`
 (updated weekly).
+
+## Licensing
+
+The software in terms of the MIT license are the Dockerfiles and test files
+provided. This does not include the pre-built Docker images we provide. They
+follow the redistribution conditions of the bundled software.
