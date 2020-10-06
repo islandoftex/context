@@ -26,7 +26,7 @@ build:beta:
   <<: *builddefinition
   script:
     - IMAGETAG="context-beta-`date +%Y-%m-%d-%H-%M`"
-    - docker build -f Dockerfile.mkivbeta --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:beta .
+    - docker build -f Dockerfile.mkivbeta --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:beta --tag $DOCKER_HUB_IMAGE:beta .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:beta
     - if [ ! -z "$PUSH_TO_DOCKER_HUB" ]; then docker push $DOCKER_HUB_IMAGE:beta; fi
@@ -39,7 +39,7 @@ build:current:
   <<: *builddefinition
   script:
     - IMAGETAG="context-current-`date +%Y-%m-%d-%H-%M`"
-    - docker build -f Dockerfile.mkivcurrent --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:current .
+    - docker build -f Dockerfile.mkivcurrent --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:current --tag $DOCKER_HUB_IMAGE:current .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:current
     - if [ ! -z "$PUSH_TO_DOCKER_HUB" ]; then docker push $DOCKER_HUB_IMAGE:current; fi
@@ -52,7 +52,7 @@ build:lmtx:
   <<: *builddefinition
   script:
     - IMAGETAG="context-lmtx-`date +%Y-%m-%d-%H-%M`"
-    - docker build -f Dockerfile.lmtx --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:lmtx .
+    - docker build -f Dockerfile.lmtx --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:lmtx --tag $DOCKER_HUB_IMAGE:lmtx .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:lmtx
     - if [ ! -z "$PUSH_TO_DOCKER_HUB" ]; then docker push $DOCKER_HUB_IMAGE:lmtx; fi
