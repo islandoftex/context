@@ -1,6 +1,7 @@
 variables:
   DOCKER_DRIVER: overlay2
   RELEASE_IMAGE: registry.gitlab.com/islandoftex/images/context
+  DOCKER_HUB_IMAGE: contextgarden/context
 stages:
   - build
   - test
@@ -12,6 +13,7 @@ stages:
     - docker:dind
   before_script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN registry.gitlab.com
+    - docker login -u $DOCKER_HUB_USER -p $DOCKER_HUB_PASSWORD
     - docker info
 
 .testtemplate: &testdefinition
@@ -27,6 +29,7 @@ build:beta:
     - docker build -f Dockerfile.mkivbeta --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:beta .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:beta
+    - if [ ! -z "$PUSH_TO_DOCKER_HUB" ]; then docker push $DOCKER_HUB_IMAGE:beta; fi
   rules:
     - if: '$CTXBETA == "true"'
       when: always
@@ -39,6 +42,7 @@ build:current:
     - docker build -f Dockerfile.mkivcurrent --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:current .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:current
+    - if [ ! -z "$PUSH_TO_DOCKER_HUB" ]; then docker push $DOCKER_HUB_IMAGE:current; fi
   rules:
     - if: '$CTXCURRENT == "true"'
       when: always
@@ -51,6 +55,7 @@ build:lmtx:
     - docker build -f Dockerfile.lmtx --tag $RELEASE_IMAGE:$IMAGETAG --tag $RELEASE_IMAGE:lmtx .
     - docker push $RELEASE_IMAGE:$IMAGETAG
     - docker push $RELEASE_IMAGE:lmtx
+    - if [ ! -z "$PUSH_TO_DOCKER_HUB" ]; then docker push $DOCKER_HUB_IMAGE:lmtx; fi
   rules:
     - if: '$CTXLMTX == "true"'
       when: always
