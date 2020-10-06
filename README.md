@@ -14,6 +14,12 @@ the image and use
 
 or any other tag.
 
+If you want to pull these images from Docker Hub, simply use
+
+    FROM contextgarden/context:beta
+
+or any other tag.
+
 The three main tags are `current` (updated monthly), `beta` and `lmtx`
 (updated weekly).
 
