@@ -1,5 +1,5 @@
 # ConTeXt MkIV does not run on Alpine, so we use Debian
-FROM gitlab.com/islandoftex/dependency_proxy/containers/debian:testing
+FROM debian:testing
 
 # install all relevant packages
 RUN apt-get update && \ 

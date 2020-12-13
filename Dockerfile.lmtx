@@ -1,6 +1,6 @@
 # ConTeXt LMTX is currently not available for Linux/MUSL. Hence, we choose
 # Debian instead of Alpine.
-FROM gitlab.com/islandoftex/dependency_proxy/containers/debian:testing
+FROM debian:testing
 
 # install all relevant packages
 RUN apt-get update && \
